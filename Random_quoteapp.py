@@ -1,0 +1,119 @@
+import tkinter as tk
+import requests
+
+# ==============================
+# API Configuration
+# ==============================
+API_KEY = "E69YaaAkIhmgxdCET1WSBg4fK0fhCe59aGK9ksQ6"
+API_URL = "https://api.api-ninjas.com/v1/quotes"
+
+# ==============================
+# Function to Fetch Quote
+# ==============================
+def get_quote():
+    try:
+        headers = {
+            "X-Api-Key": API_KEY
+        }
+
+        response = requests.get(
+            API_URL,
+            headers=headers,
+            timeout=5
+        )
+
+        if response.status_code == 200:
+            data = response.json()[0]
+
+            quote = data["quote"]
+            author = data["author"]
+
+            quote_label.config(text=f'"{quote}"')
+            author_label.config(text=f"— {author}")
+
+        else:
+            quote_label.config(
+                text="Unable to fetch quote."
+            )
+            author_label.config(
+                text=f"Error Code: {response.status_code}"
+            )
+
+    except Exception:
+        quote_label.config(
+            text="Check your internet connection."
+        )
+        author_label.config(text="")
+
+# ==============================
+# Main Window
+# ==============================
+root = tk.Tk()
+root.title("Random Quote Generator")
+root.geometry("700x400")
+root.resizable(False, False)
+root.configure(bg="#f5f5f5")
+
+# Card Container
+card = tk.Frame(
+    root,
+    bg="white",
+    padx=30,
+    pady=30
+)
+card.pack(
+    expand=True,
+    padx=20,
+    pady=20
+)
+
+# Title
+title = tk.Label(
+    card,
+    text="Random Quote Generator",
+    font=("Helvetica", 20, "bold"),
+    bg="white"
+)
+title.pack(pady=(0, 20))
+
+# Quote Label
+quote_label = tk.Label(
+    card,
+    text="Loading...",
+    font=("Helvetica", 14),
+    wraplength=550,
+    justify="center",
+    bg="white",
+    fg="#333333"
+)
+quote_label.pack(pady=20)
+
+# Author Label
+author_label = tk.Label(
+    card,
+    text="",
+    font=("Helvetica", 12, "italic"),
+    bg="white",
+    fg="gray"
+)
+author_label.pack()
+
+# New Quote Button
+new_quote_btn = tk.Button(
+    card,
+    text="New Quote",
+    command=get_quote,
+    font=("Helvetica", 12, "bold"),
+    bg="#007BFF",
+    fg="white",
+    padx=15,
+    pady=8,
+    cursor="hand2"
+)
+new_quote_btn.pack(pady=25)
+
+# Display quote when app starts
+get_quote()
+
+# Run Application
+root.mainloop()
