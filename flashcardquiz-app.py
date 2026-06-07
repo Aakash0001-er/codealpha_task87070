@@ -1,0 +1,109 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+# Flashcards
+flashcards = {
+    "What is the capital of France?": "Paris",
+    "What is 5 + 7?": "12",
+    "Who wrote 'To Kill a Mockingbird'?": "Harper Lee",
+    "What is the chemical symbol of water?": "H2O",
+    "Which planet is known as the Red Planet?": "Mars"
+}
+
+# Shuffle questions
+questions = list(flashcards.keys())
+random.shuffle(questions)
+
+current_question = 0
+score = 0
+
+# Check answer
+def check_answer():
+    global current_question, score
+
+    user_answer = answer_entry.get().strip()
+
+    if user_answer.lower() == flashcards[questions[current_question]].lower():
+        score += 1
+        result_label.config(text="✅ Correct!", fg="green")
+    else:
+        correct = flashcards[questions[current_question]]
+        result_label.config(
+            text=f"❌ Correct Answer: {correct}",
+            fg="red"
+        )
+
+    next_button.config(state="normal")
+    submit_button.config(state="disabled")
+
+# Load next question
+def next_question():
+    global current_question
+
+    current_question += 1
+
+    if current_question < len(questions):
+        question_label.config(text=questions[current_question])
+        answer_entry.delete(0, tk.END)
+        result_label.config(text="")
+        submit_button.config(state="normal")
+        next_button.config(state="disabled")
+    else:
+        messagebox.showinfo(
+            "Quiz Finished",
+            f"You scored {score}/{len(questions)}"
+        )
+        root.quit()
+
+# Main window
+root = tk.Tk()
+root.title("Flashcard Quiz App")
+root.geometry("500x300")
+root.resizable(False, False)
+
+# Heading
+title_label = tk.Label(
+    root,
+    text="Flashcard Quiz",
+    font=("Arial", 18, "bold")
+)
+title_label.pack(pady=10)
+
+# Question
+question_label = tk.Label(
+    root,
+    text=questions[current_question],
+    font=("Arial", 14),
+    wraplength=450
+)
+question_label.pack(pady=20)
+
+# Answer box
+answer_entry = tk.Entry(root, font=("Arial", 12), width=30)
+answer_entry.pack(pady=10)
+
+# Submit button
+submit_button = tk.Button(
+    root,
+    text="Submit Answer",
+    font=("Arial", 12),
+    command=check_answer
+)
+submit_button.pack(pady=5)
+
+# Result label
+result_label = tk.Label(root, text="", font=("Arial", 12))
+result_label.pack(pady=10)
+
+# Next button
+next_button = tk.Button(
+    root,
+    text="Next Question",
+    font=("Arial", 12),
+    command=next_question,
+    state="disabled"
+)
+next_button.pack(pady=5)
+
+root.mainloop()
